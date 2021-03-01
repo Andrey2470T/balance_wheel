@@ -12,6 +12,8 @@ CXXFLAGS += -std=c++17
 
 LIBS += -L$(IRRLICHT_PATH)/lib/Linux -lIrrlicht -L/usr/X11R6/lib64 -lGL -lXxf86vm -lXext -lX11
 
+SOURCES = main.cpp
+
 TARGET = balance_wheel
 
 .PHONY : all clean
@@ -19,7 +21,7 @@ TARGET = balance_wheel
 all : clean $(TARGET)
 
 $(TARGET) : 
-	g++ $(CPPFLAGS) $(CXXFLAGS) main.cpp -o $(TARGET) $(LIBS)
+	g++ $(CPPFLAGS) $(CXXFLAGS) $(SOURCES) -o $(TARGET) $(LIBS)
 
 clean : 
 	rm -f $(TARGET).o
