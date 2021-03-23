@@ -14,10 +14,10 @@ struct BalanceWheelParams
 	f32 friction_coef = 0.1f;
 	f32 string_friction_coef = 1.0f;
 	const f32 original_start_ang = 60.f;  // in degrees
-	const core::vector3df pos = core::vector3df(0.f, 0.f, 0.f);
-	const core::vector3df scale = core::vector3df(0.5, 1.f, 1.f);
-	const f32 radius = 5.f;
-	const f32 original_vel = 0.f;
+	const core::vector3df pos = core::vector3df(0.0f, 0.0f, 0.0f);
+	const core::vector3df scale = core::vector3df(0.25f, 1.0f, 1.0f);
+	const f32 radius = 5.0f;
+	const f32 original_vel = 0.0f;
 	const f32 push_force = 500.0f;
 };
 
@@ -121,45 +121,6 @@ public:
 	core::vector3df mousePosDelta;
 	core::vector3df lastMousePos;
 };
-/*class AppEventReceiver : public IEventReceiver
-{
-public:
-	AppEventReceiver() : isEscPressed(false), isMouseWheelChanged(false), wheel(0.f), pressed_btn(nullptr)
-	{	
-	}
-	
-	virtual bool OnEvent(const SEvent& event) override
-	{
-		std::cout << (event.EventType == EET_GUI_EVENT) << std::endl;
-		if (event.EventType == EET_KEY_INPUT_EVENT &&
-			event.KeyInput.Key == KEY_ESCAPE &&
-			event.KeyInput.PressedDown
-		)
-			isEscPressed = true;
-		else if (event.EventType == EET_MOUSE_INPUT_EVENT)
-			if (event.MouseInput.Event == EMIE_MOUSE_WHEEL)
-			{
-				isMouseWheelChanged = true;
-				wheel = event.MouseInput.Wheel;
-			}
-		else if (event.EventType == EET_GUI_EVENT)
-		{
-			std::cout << "GUI Event Type: " << event.GUIEvent.EventType << std::endl;
-			if (event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED)
-				std::cout << "GUI Event Type: " << event.GUIEvent.EventType << std::endl;
-				pressed_btn = event.GUIEvent.Element;
-				if (pressed_btn == nullptr)
-					std::cout << "pressed_btn is nullptr" << std::endl;
-		}
-			
-		return false;
-	}
-	
-	bool isEscPressed;
-	bool isMouseWheelChanged;
-	f32 wheel;
-	gui::IGUIElement* pressed_btn;
-};*/
 
 void createExitDialogueWindow(gui::IGUIEnvironment* env)
 {
@@ -204,7 +165,7 @@ void createExitDialogueWindow(gui::IGUIEnvironment* env)
 
 int main()
 {
-	IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2du(1024, 768), 32, false);
+	IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2du(1024, 768), 32, false, true);
 	
 	if (device == nullptr)
 	{
@@ -239,9 +200,10 @@ int main()
 		return 1;
 	}
 	
+	core::vector3df up_vec = (end*-1.0f).normalize();
 	bal_wheel->setPosition(beam.end);
 	bal_wheel->setScale(bw_params.scale);
-	bal_wheel->setRotation(core::vector3df(0.f, 0.f, bw_params.original_start_ang));
+	bal_wheel->setRotation(up_vec.getHorizontalAngle());
 	
 	video::SMaterial material;
 	material.MaterialType = video::EMT_LIGHTMAP_LIGHTING;
@@ -251,9 +213,6 @@ int main()
 	bal_wheel->getMaterial(0) = material;
 	bal_wheel->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
 	bal_wheel->setMaterialTexture(0, vdrv->getTexture(fsys->getAbsolutePath("./textures/wood5.jpeg")));
-	
-	bal_wheel->addShadowVolumeSceneNode();
-	smgr->setShadowColor(video::SColor(150,0,0,0));
 	
 	scene::IMeshSceneNode* platform = smgr->addMeshSceneNode(
 		smgr->getMesh(fsys->getAbsolutePath("./models/stone_square.b3d")),
@@ -269,10 +228,14 @@ int main()
 	platform->setPosition(core::vector3df(bw_params.pos.X, bw_params.pos.Y - bw_params.original_len - bw_params.radius - 3.f, 0.f));
 	platform->getMaterial(0) = material;
 	platform->setMaterialTexture(0, vdrv->getTexture(fsys->getAbsolutePath("./textures/stone2.jpg")));
-	platform->addShadowVolumeSceneNode();
 	
 	scene::ILightSceneNode* light = smgr->addLightSceneNode(0, core::vector3df(bw_params.pos.X + 10.f, bw_params.pos.Y, 0.f), video::SColorf(255.f, 255.f, 255.f, 255.f), 50.f, OBJECT_ID_LIGHT);
-	scene::ICameraSceneNode* camera = smgr->addCameraSceneNode(0, core::vector3df(0.0f, -bw_params.original_len/2, bw_params.original_len), core::vector3df(0.0f, -bw_params.original_len, 0.0f), OBJECT_ID_CAMERA, true);
+	scene::ICameraSceneNode* camera = smgr->addCameraSceneNode(0, core::vector3df(0.0f, -bw_params.original_len/2, bw_params.original_len*2), core::vector3df(0.0f, -bw_params.original_len, 0.0f), OBJECT_ID_CAMERA, true);
+	
+	//scene::ILightSceneNode* light2 = smgr->addLightSceneNode(0, core::vector3df(-50.0f, 0.0f, 0.0f), video::SColorf(0.0f,0.0f,0.0f,255.0f), 50.f, 5);
+	//scene::ILightSceneNode* light3 = smgr->addLightSceneNode(0, core::vector3df(50.0f, 0.0f, 0.0f), video::SColorf(0.0f,0.0f,0.0f,255.0f), 50.f, 6);
+	//scene::ILightSceneNode* light4 = smgr->addLightSceneNode(0, core::vector3df(0.0f, 0.0f, -50.0f), video::SColorf(0.0f,0.0f,0.0f,255.0f), 50.f, 7);
+	//scene::ILightSceneNode* light5 = smgr->addLightSceneNode(0, core::vector3df(0.0f, 0.0f, 50.0f), video::SColorf(0.0f,0.0f,0.0f,255.0f), 50.f, 8);
 	camera->bindTargetAndRotation(true);
 	
 	if (light == nullptr)
@@ -281,9 +244,13 @@ int main()
 		return 1;
 	}
 	
-	smgr->addTextSceneNode(env->getBuiltInFont(), L"X", video::SColor(255, 255, 255, 255), 0, core::vector3df(55.0f, 0.0f, 0.0f), 5);
-	smgr->addTextSceneNode(env->getBuiltInFont(), L"Y", video::SColor(255, 255, 255, 255), 0, core::vector3df(0.0f, 55.0f, 0.0f), 6);
-	smgr->addTextSceneNode(env->getBuiltInFont(), L"Z", video::SColor(255, 255, 255, 255), 0, core::vector3df(0.0f, 0.0f, 55.0f), 7);
+	smgr->addTextSceneNode(env->getBuiltInFont(), L"X", video::SColor(255, 255, 255, 255), 0, core::vector3df(55.0f, 0.0f, 0.0f), 9);
+	smgr->addTextSceneNode(env->getBuiltInFont(), L"Y", video::SColor(255, 255, 255, 255), 0, core::vector3df(0.0f, 55.0f, 0.0f), 10);
+	smgr->addTextSceneNode(env->getBuiltInFont(), L"Z", video::SColor(255, 255, 255, 255), 0, core::vector3df(0.0f, 0.0f, 55.0f), 11);
+	
+	bal_wheel->addShadowVolumeSceneNode(0, 12, true);
+	smgr->setShadowColor(video::SColor(150,0,0,0));
+	platform->addShadowVolumeSceneNode(0, 13, true);
 	
 	core::vector3df cur_vel(bw_params.original_vel);
 	core::vector3df cur_rel_pos(end);
@@ -412,7 +379,7 @@ int main()
 			f32 pos_len_sqr = cur_rel_pos.dotProduct(cur_rel_pos);
 			core::vector3df string_friction_force;
 			if (std::fabs(pos_len_sqr) > 0.01)
-				string_friction_force = -(cur_vel.dotProduct(cur_rel_pos))/(pos_len_sqr)*cur_rel_pos/std::sqrt(std::fabs(pos_len_sqr))*bw_params.string_friction_coef;
+				string_friction_force = -(cur_vel.dotProduct(cur_rel_pos))/(pos_len_sqr)*cur_rel_pos*bw_params.string_friction_coef;
 			core::vector3df res_force = core::vector3df(0.0f, bw_params.gravity*bw_params.mass, 0.0f) + elastic_force + friction_force + string_friction_force + cur_push_force;
 			
 			cur_rel_pos += cur_vel*0.001;
@@ -422,11 +389,24 @@ int main()
 			
 			bal_wheel->setPosition(bw_params.pos + cur_rel_pos);
 			
+			up_vec = (cur_rel_pos*-1.0f).normalize();
+			bal_wheel->setRotation(up_vec.getHorizontalAngle());
+			
 			vdrv->beginScene(true, true, video::SColor(0, 0, 0, 255));
 			vdrv->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-			vdrv->draw3DLine(core::vector3df(-50.0f, 0.0f, 0.0f), core::vector3df(50.0f, 0.0f, 0.0f), video::SColor(252, 0, 20, 255));
-			vdrv->draw3DLine(core::vector3df(0.0f, -50.0f, 0.0f), core::vector3df(0.0f, 50.0f, 0.0f), video::SColor(10, 0, 234, 255));
-			vdrv->draw3DLine(core::vector3df(0.0f, 0.0f, -50.0f), core::vector3df(0.0f, 0.0f, 50.0f), video::SColor(0, 217, 0, 255));
+			
+			video::SMaterial line_material;
+			line_material.setFlag(video::EMF_NORMALIZE_NORMALS, true);
+			line_material.Thickness = 1.5;
+			line_material.Lighting = true;
+			line_material.MaterialType = video::EMT_LIGHTMAP_LIGHTING;
+			line_material.NormalizeNormals = true;
+
+			vdrv->setMaterial(line_material);
+			vdrv->draw3DLine(core::vector3df(-50.0f, 0.0f, 0.0f), core::vector3df(50.0f, 0.0f, 0.0f), video::SColor(202,0,16,255));//video::SColor(252, 0, 20, 255));
+			vdrv->draw3DLine(core::vector3df(0.0f, -50.0f, 0.0f), core::vector3df(0.0f, 50.0f, 0.0f), video::SColor(0,126,0,255));//video::SColor(10, 0, 234, 255));
+			vdrv->draw3DLine(core::vector3df(0.0f, 0.0f, -50.0f), core::vector3df(0.0f, 0.0f, 50.0f), video::SColor(0,0,146,255));//video::SColor(0, 217, 0, 255));
+			
 			vdrv->draw3DLine(beam.start, bw_params.pos + cur_rel_pos, video::SColor(255, 255, 255, 255));
 			smgr->drawAll();
 			env->drawAll();

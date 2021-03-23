@@ -12,8 +12,7 @@ public:
 	
 	virtual bool OnEvent(const SEvent& event)
 	{
-		if (camera_input)
-			camera_input->OnEvent(event);
+		
 		if (event.EventType == EET_KEY_INPUT_EVENT &&
 			event.KeyInput.Key == KEY_ESCAPE &&
 			event.KeyInput.PressedDown
