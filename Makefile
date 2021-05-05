@@ -1,4 +1,4 @@
-IRRLICHT_PATH = /home/andrey/irrlicht-1.8.4
+IRRLICHT_PATH = /home/andrey/irrlicht-1.9
 
 CPPFLAGS += -I$(IRRLICHT_PATH)/include -I/usr/X11R6/include
 
@@ -12,7 +12,7 @@ CXXFLAGS += -std=c++17
 
 LIBS += -L$(IRRLICHT_PATH)/lib/Linux -lIrrlicht -L/usr/X11R6/lib64 -lGL -lXxf86vm -lXext -lX11
 
-SOURCES = main.cpp
+SOURCES = ~/balance_wheel/IrrExtensions/gui/GUIScrollPane.cpp main.cpp
 
 TARGET = balance_wheel
 
