@@ -741,7 +741,6 @@ int main()
 			device->yield();
 		}
 		needTime += 10;
-		std::cout << needTime << std::endl;
 	}
 	
 	device->drop();
